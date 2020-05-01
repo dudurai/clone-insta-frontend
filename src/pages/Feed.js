@@ -11,7 +11,7 @@ import send from "../assets/send.svg";
 
 class Feed extends Component {
   state = {
-    feed: []
+    feed: [],
   };
 
   async componentDidMount() {
@@ -23,29 +23,29 @@ class Feed extends Component {
   }
 
   registerToSocket = () => {
-    const socket = io("http://localhost:3333");
+    const socket = io(process.env.REACT_APP_API_URL);
 
-    socket.on("post", newPost => {
+    socket.on("post", (newPost) => {
       this.setState({ feed: [newPost, ...this.state.feed] });
     });
 
-    socket.on("like", likedPost => {
+    socket.on("like", (likedPost) => {
       this.setState({
-        feed: this.state.feed.map(post => {
+        feed: this.state.feed.map((post) => {
           return post._id === likedPost._id ? likedPost : post;
-        })
+        }),
       });
     });
   };
 
-  handleLike = async id => {
+  handleLike = async (id) => {
     await api.post(`/posts/${id}/like`);
   };
 
   render() {
     return (
       <section id="post-list">
-        {this.state.feed.map(post => (
+        {this.state.feed.map((post) => (
           <article key={post._id}>
             <header>
               <div className="user-info">
@@ -56,7 +56,10 @@ class Feed extends Component {
               <img src={more} alt="More" />
             </header>
 
-            <img src={`http://localhost:3333/files/${post.image}`} alt="" />
+            <img
+              src={`${process.env.REACT_APP_API_URL}/files/${post.image}`}
+              alt=""
+            />
 
             <footer>
               <div className="actions">
